@@ -34,3 +34,9 @@ Rebuilding my understanding of neural networks from first principles.
 - 相同学习率的情况下，使用数据的不同会影响是否参数爆炸。比如拟合y=7x-3时，如果data=[(1,4),(2,11),(3,18),(4,25),(5,32)]，甚至可以使用0.2的学习率来让他快速收敛；但是如果data=[(1,4),(2,11),(3,18),(4,25),(5,32),(6,39),(7,46),(8,53),(9,60),(10,67)]，0.1的学习率会就会使参数爆炸。
 - 这是因为gradient = loss * x, 随着x变大，gradient也会变大，固定的学习率乘以大的梯度会导致挪动的距离太大，导致无法找到最优解。因此需要数据归一化。
 - [查看该版本代码](https://github.com/Foxdebox/NN_learning/commit/8de22e3b5ace859fb6383ccc5b13a75597f7bf89)
+
+### v4:增加了归一化和反归一化，以及调用NumPy库
+- Normalization（归一化）：因为梯度和输入成正比，若不进行缩放，巨大的输入值会导致梯度异常增大，从而导致参数爆炸。通过将输入归一化到一致的较小的范围，可以避免这种干扰，让参数更新过程更稳定，高效。
+- Denormalization(反归一化): 将模型计算出的参数还原回原本的单位和范围，让预测结果变得直观。
+- NumPy:提供极其方便的内置函数(均值，标准差，极值等等)。此外，array(数组)让输入数据的处理变得非常方便
+- [查看该版本代码](https://github.com/Foxdebox/NN_learning/commit/d69eb1dc619235b5ea50ddb501be3debc50008d9)
