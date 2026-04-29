@@ -40,3 +40,21 @@ Rebuilding my understanding of neural networks from first principles.
 - Denormalization(反归一化): 将模型计算出的参数还原回原本的单位和范围，让预测结果变得直观。
 - NumPy:提供极其方便的内置函数(均值，标准差，极值等等)。此外，array(数组)让输入数据的处理变得非常方便
 - [查看该版本代码](https://github.com/Foxdebox/NN_learning/commit/d69eb1dc619235b5ea50ddb501be3debc50008d9)
+
+### 阶段反思：使用AI帮助我发现并改正一些错误的认识
+- y_predict - y_actual 实际上是residual（残差)
+- loss 被叫做损失函数，是用来衡量预测值和真实值之间差距的函数，形式不止一种，包括但不限于
+  - MSE(mean square error)        L=1/N​∑(y_pred​−y)**2,
+  - MAE(mean absolute error)    L=1/N∑|y_pred-y| 等等等等
+- 梯度=loss对参数的导数（用链式法则求导）
+- 我之前的代码是SGD(stochastic gradient descent)随机梯度下降，是指每次用一个随机样本的梯度来更新参数。除此之外还有Batch GD(使用全部数据算梯度),Mini-batch(使用一小批算梯度)
+- 为什么平均梯度再更新更好？
+- 是因为目标是最小化整体的loss, 而L=所有样本的整体误差。如果使用SGG，每个样本都在拉着参数往自己方向走，非常容易来回震荡，不稳定。而使用Batch,则是看所有样本，求一个平均方向，再更新。既不容易来回震荡，也更接近真实目标（降低整体loss）
+- 这三种方法有各自优缺点
+  - SGD 快,有随机性，能跳出局部最优
+  - Batch 稳定但慢
+  - Mini-batch 折中
+- 向量化的向量并不是物理里有方向的量，而是一组数(ordered list)。比如X = [1, 2, 3, 4]就叫做向量。因此向量化的意思是用向量（数组）做计算，而不是单个的数。向量化的核心是将原本需要用循环执行的操作，转化为一次性对整个数组和矩阵的数学运算。
+
+- 下一步目标向量化，使用平均梯度更新参数，理解并掌握需要使用的NumPy工具
+
