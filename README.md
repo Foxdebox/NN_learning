@@ -18,7 +18,7 @@ Rebuilding my understanding of neural networks from first principles.
 
 ### 🟢 v1: 初次尝试根据输入值调整参数大小，使用了指数调整
 * w和b不能分别调整，而且使用指数调整极易发散，不容易收敛
-* [🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/commit/d6a8de7a271f5aa5fd4d6796cb7221723b2f2ca1)
+* [🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/blob/d6a8de7a271f5aa5fd4d6796cb7221723b2f2ca1/linear_model_v1.py)
 
 ### 🟢 v2: 引入了梯度下降和学习率
 * 参数=参数-梯度×学习率 加减取代了指数运算，训练更平滑，更易收敛
@@ -26,7 +26,7 @@ Rebuilding my understanding of neural networks from first principles.
 * learning rate 来调整步长，也可以让数值更稳定，更平滑更容易收敛
 * 手动输入x和y值有点麻烦和费时，下一步应该改进
 * 0.1的学习率太大了，在训练过程中容易参数爆炸，最好找到一种方法可以判断最佳学习率是多少
-* [🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/commit/524b35c923bb204e3f5f121b35ede141365c50d3)
+* [🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/blob/524b35c923bb204e3f5f121b35ede141365c50d3/linear_model_v2.py)
 
 ### 🟢 v3: 自动化训练过程
 * 移除了手动输入的模式，改为使用数据集进行循环训练
@@ -34,13 +34,13 @@ Rebuilding my understanding of neural networks from first principles.
 * 使用f-string,并保留两位小数可以让输出更美观
 * 相同学习率的情况下，使用数据的不同会影响是否参数爆炸。比如拟合y=7x-3时，如果data=[(1,4),(2,11),(3,18),(4,25),(5,32)]，甚至可以使用0.2的学习率来让他快速收敛；但是如果data=[(1,4),(2,11),(3,18),(4,25),(5,32),(6,39),(7,46),(8,53),(9,60),(10,67)]，0.1的学习率会就会使参数爆炸。
 * 这是因为gradient = loss * x, 随着x变大，gradient也会变大，固定的学习率乘以大的梯度会导致挪动的距离太大，导致无法找到最优解。因此需要数据归一化。
-* [🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/commit/8de22e3b5ace859fb6383ccc5b13a75597f7bf89)
+* [🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/blob/8de22e3b5ace859fb6383ccc5b13a75597f7bf89/linear_model_v3.py)
 
 ### 🟢 v4: 增加了归一化和反归一化，以及调用NumPy库
 * Normalization（归一化）：因为梯度和输入成正比，若不进行缩放，巨大的输入值会导致梯度异常增大，从而导致参数爆炸。通过将输入归一化到一致的较小的范围，可以避免这种干扰，让参数更新过程更稳定，高效。
 * Denormalization(反归一化): 将模型计算出的参数还原回原本的单位和范围，让预测结果变得直观。
 * NumPy:提供极其方便的内置函数(均值，标准差，极值等等)。此外，array(数组)让输入数据的处理变得非常方便
-* [🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/commit/d69eb1dc619235b5ea50ddb501be3debc50008d9)
+* [🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/blob/d69eb1dc619235b5ea50ddb501be3debc50008d9/linear_model_v4.py)
 
 ---
 
@@ -89,4 +89,4 @@ Rebuilding my understanding of neural networks from first principles.
   * `np.zeros(shape)` 是创建一个全零数组
   * `np.mean(data, axis=)` 是求平均值, `axis=0` 是压缩行，求每一列的平均值；`axis=1` 是压缩列，求每一行的平均值。如果不带 `axis=`，返回值就是一个标量。
   * `np.std(data, axis=)` 是求标准差，用法和 `np.mean()` 相同
-* [🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/commit/f7cb1779ca842a0d9549d3ae2a56b1b69fb5adf3)
+* [🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/blob/f7cb1779ca842a0d9549d3ae2a56b1b69fb5adf3/linear_model_v5.py)
