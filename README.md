@@ -90,3 +90,57 @@ Rebuilding my understanding of neural networks from first principles.
   * `np.mean(data, axis=)` 是求平均值, `axis=0` 是压缩行，求每一列的平均值；`axis=1` 是压缩列，求每一行的平均值。如果不带 `axis=`，返回值就是一个标量。
   * `np.std(data, axis=)` 是求标准差，用法和 `np.mean()` 相同
 * [🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/blob/f7cb1779ca842a0d9549d3ae2a56b1b69fb5adf3/linear_model_v5.py)
+
+---
+
+### 🟢 v6: 实战 Kaggle 房价预测 - 迈向真实世界数据
+
+第一次处理真实世界的 CSV 数据（1460 行），并正式向 Kaggle 提交预测结果。在这个版本中，我实现了从 0.87 到 0.18 的分数突破。
+
+#### 实战记录：
+* **初次提交**：因为未对测试集的缺失值进行处理导致报错。
+* **第二次提交**：因为未对 y 取对数，导致分数是 0.87504。
+* **第三次提交**：将 y 进行对数转化之后，分数飞跃到 **0.18768**。
+
+此次尝试只使用了三个特征值：`OverallQual`, `GrLivArea`, `TotalBsmtSF`。
+
+因为预测误差应该看百分比而非绝对差值，为了避免高价房带偏模型，引入对数缩放：
+
+###### 对数转换： 
+$$y_{log} = \ln(1 + x)$$
+（加 1 是为了防止 $x=0$）
+* 代码实现：`np.log1p(y_actual)`
+
+###### 指数逆转换： 
+$$y_{pred} = e^x - 1$$
+（将模型计算出的对数值还原回原本的单位和范围，让预测结果变得直观）
+* 代码实现：`np.expm1(y_predict_log)`
+
+#### Pandas常用操作
+在处理 Kaggle 数据的过程中，我学习了 Pandas 的用法
+
+##### **1. 数据读取与观察**
+* `pd.read_csv('train.csv')`：将 CSV 文件转为 DataFrame 表格。
+* `df.head(n)` / `df.tail(n)`：展示前 $n$ 行或后 $n$ 行。
+* `df.shape`：告诉几行几列。
+* `df.info()`：显示数据类型、非空数量、内存占用。
+* `df.describe()`：计算每列的计数、均值、标准差、最小值、分位数、最大值。
+
+##### **2. 缺失值处理**
+* `df.isnull().sum()`：判断空值并求和，输出每一列有多少缺失值。
+* `df.dropna()`：将有缺失值的行直接删掉。
+* `df_test[features] = df_test[features].fillna(df[features].mean())`：用训练集的平均值来填补测试集的空值。
+
+##### **3. 数据提取与转换**
+* **目标值检查**：使用 `df['SalePrice'].describe()` 检查特定列。
+* **钥匙逻辑**：`features = [...]` 和 `label = '...'` 就像制作钥匙，通过 `selected_df = df[features + label]` 提取特定列。
+* **矩阵化**：`df.values` 将表格变成 NumPy array 形式，以便后续运算。
+
+##### **4. 预测结果导出**
+* `pd.DataFrame()`：创造一个空白表格。
+* **新开列**：`submission_df['Id'] = df_test['Id']`。 将测试集的Id的值同步给它
+* `to_csv('name.csv', index=False)`：将表格变成文件，`index=False` 用于取消行号。
+
+**[🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/blob/c85c6ea36dd4f67f3d5215668287f05f44518ea6/linear_model_v6.py)**
+
+---
