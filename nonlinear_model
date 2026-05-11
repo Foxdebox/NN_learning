@@ -1,0 +1,62 @@
+import pandas as pd
+import numpy as np
+df = pd.read_csv('train.csv')
+features = ['OverallQual','GrLivArea','TotalBsmtSF']
+label = ['SalePrice']
+selected_df = df[features + label]
+clean_df = selected_df.dropna()
+x = clean_df[features].values
+y_actual = clean_df[label].values
+y_log = np.log1p(y_actual)
+def normalize(data,means,stds):
+    return (data-means)/stds
+def relu_derivative(z):
+    return(z>0).astype(float)
+def train(x,y_log,lr,epochs):
+    means = np.mean(x,axis=0)
+    stds = np.std(x,axis=0)
+    x_norm = normalize(x,means,stds)
+    n = x_norm.shape[0]
+    n_features = x_norm.shape[1]
+    w_1 = np.random.randn(n_features,64) #更改初始参数设置，loss下降明显
+    b_1 = np.zeros((1,64))
+    w_2 = np.random.randn(64,1)
+    b_2 = np.zeros((1,1))
+    for epoch in range(epochs):
+        z_1 = np.dot(x_norm,w_1) + b_1
+        a_1 = np.maximum(0,z_1)
+        z_2 = np.dot(a_1,w_2) + b_2
+        y_predict = z_2
+        residual = y_predict - y_log
+        loss = np.mean(residual**2)
+        error_signal_2 = 2/n * residual
+        gradient_w_2 = np.dot(a_1.T,error_signal_2)
+        gradient_b_2 = np.sum(error_signal_2,axis=0)
+        error_signal_1 = np.dot(error_signal_2,w_2.T)*relu_derivative(z_1)
+        gradient_w_1 = np.dot(x_norm.T,error_signal_1)
+        gradient_b_1 = np.sum(error_signal_1,axis=0)
+        w_2 = w_2 - gradient_w_2 * lr
+        b_2 = b_2 - gradient_b_2 * lr
+        w_1 = w_1 - gradient_w_1 * lr
+        b_1 = b_1 - gradient_b_1 * lr
+        if epoch % 500 == 0:
+            print(f"第{epoch}轮,loss={loss:.5f}")
+    return w_1,b_1,w_2,b_2,loss,means,stds
+w_1,b_1,w_2,b_2,loss,means,stds = train(x,y_log,0.02,10000)
+df_test = pd.read_csv('test.csv')
+df_means = df[features].mean()
+df_test[features] = df_test[features].fillna(df_means)
+x_test = df_test[features].values
+x_test_norm = normalize(x_test,means,stds)
+z_1 = np.dot(x_test_norm,w_1) + b_1
+a_1 = np.maximum(0,z_1)
+z_2 = np.dot(a_1,w_2) + b_2
+y_predict_log = z_2
+y_predict = np.expm1(y_predict_log)
+submission_df = pd.DataFrame()
+submission_df['Id'] = df_test['Id']
+submission_df['SalePrice'] = y_predict
+submission_df.to_csv('submission.csv',index=False)
+
+
+    
