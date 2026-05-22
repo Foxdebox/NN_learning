@@ -144,3 +144,149 @@ $$y_{pred} = e^x - 1$$
 **[🔗 查看该版本代码](https://github.com/Foxdebox/NN_learning/blob/c85c6ea36dd4f67f3d5215668287f05f44518ea6/linear_model_v6.py)**
 
 ---
+
+## 非线性神经网络
+
+### 🟢 Non-linear v1: 手动实现反向传播（学习中）
+
+针对 2-3-1 结构神经网络的各个参数进行梯度计算与底层数学逻辑的推导记录。
+
+#### 1. 网络架构与前向传播
+
+该神经网络包含输入层、隐藏层、输出层共三层结构：
+
+* **输入层**： 输入特征向量为
+
+$$
+X = (X_1, X_2)
+$$
+
+* **隐藏层**：
+  * 左半边（线性组合）：
+
+$$
+Z_1 = XW_1 + b_1
+$$
+
+  * 右半边（非线性激活）：
+
+$$
+A_1 = ReLU(Z_1)
+$$
+
+  * 激活函数采用 **ReLU**：
+
+$$
+ReLU(x)=\max(0,x)=
+\begin{cases}
+x,&x>0\\
+0,&x\le0
+\end{cases}
+$$
+
+* **输出层**： 表达式为
+
+$$
+y = Z_2 = A_1W_2 + b_2
+$$
+
+* **损失函数（Loss）**： 采用平方损失函数形式
+
+$$
+Loss=(y-\hat y)^2
+$$
+
+#### 2. 手动求导与参数偏导数（链式法则）
+
+利用链式法则，手推各个关键参数的偏导数公式：
+
+* **W₂ 的偏导数**
+
+$$
+\frac{\partial L}{\partial W_2} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial W_2} = 2(y-\hat y)\cdot A_1
+$$
+
+* **b₂ 的偏导数**
+
+$$
+\frac{\partial L}{\partial b_2} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial b_2} = 2(y-\hat y)
+$$
+
+* **W₁ 的偏导数**
+
+$$
+\frac{\partial L}{\partial W_1} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial A_1} \cdot \frac{\partial A_1}{\partial Z_1} \cdot \frac{\partial Z_1}{\partial W_1} = 2(y-\hat y)\cdot W_2\cdot ReLU'(x)\cdot X
+$$
+
+* **b₁ 的偏导数**
+
+$$
+\frac{\partial L}{\partial b_1} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial A_1} \cdot \frac{\partial A_1}{\partial Z_1} \cdot \frac{\partial Z_1}{\partial b_1} = 2(y-\hat y)\cdot W_2\cdot ReLU'(x)
+$$
+
+* *注：ReLU 的导数满足：*
+
+$$
+ReLU'(x)=
+\begin{cases}
+1,&x>0\\
+0,&x\le0
+\end{cases}
+$$
+
+#### 3. 数学抽象与通用误差信号（Error Signal）
+
+为了实现多层网络的通用化，引入 **误差信号（δ）** 的概念并提炼出核心通用公式：
+
+* **黄金准则**：梯度的形状必须是原参数的形状。
+
+* **参数梯度通用公式**（对于任意一层）
+
+$$
+Z=Input\times W+b
+$$
+
+  * W 的梯度：
+
+$$
+gradient_W=Input^T\times Error\_Signal
+$$
+
+  * b 的梯度：
+
+$$
+gradient_b=Error\_Signal
+$$
+
+* **误差信号定义与层间传递**
+
+  * 输出层误差信号：
+
+$$
+\delta_n=\frac{\partial L}{\partial Z_n}
+$$
+
+  * 隐藏层误差信号：
+
+$$
+\delta_l=(\delta_{l+1}\times W_{l+1}^T)\odot\sigma'(Z_l)
+$$
+
+  * 其中：
+
+    * $\delta_{l+1}$ 是下一层的误差信号
+    * $W_{l+1}$ 是下一层的权重
+    * $\odot$ 代表同形状矩阵对应位置一一相乘
+    * $\sigma'(Z_l)$ 是当前层激活函数的导数
+
+#### 4. NumPy 技巧与工程实现
+
+* **ReLU 导数的代码实现**
+
+```python
+def relu_derivative(z):
+    return (z > 0).astype(float)
+```
+
+* `return (z > 0)` 是判断是否大于零，得到布尔值
+* `astype(float)` 是将布尔值转化为浮点数 0 或 1。 是变成 1，否变成 0
